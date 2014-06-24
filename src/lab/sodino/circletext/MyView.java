@@ -1,4 +1,4 @@
-package lab.sodino.trianglelab;
+package lab.sodino.circletext;
 
 import android.content.Context;
 import android.graphics.Canvas;

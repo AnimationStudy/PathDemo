@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package lab.sodino.trianglelab;
+package lab.sodino.circletext;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.Paint.Style;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -46,11 +47,13 @@ public class PathEffects extends Activity {
         private static void makeEffects(PathEffect[] e, float phase) {
             e[0] = null;     // no effect，直接是点对点的折线
             e[1] = new CornerPathEffect(10); // 在点对点的折线上，用圆形拐角替换尖锐的线夹角，构造函数中的数值是圆形半径
-            e[2] = new DashPathEffect(new float[] {10, 5, 5, 5}, phase); // 
-            e[3] = new PathDashPathEffect(makePathDash(), 12, phase,
-                                          PathDashPathEffect.Style.ROTATE);
-            e[4] = new ComposePathEffect(e[2], e[1]);
-            e[5] = new ComposePathEffect(e[3], e[1]);
+            e[2] = new DashPathEffect(new float[] {30, 5, 5, 10}, phase); // 在点对点的折线上，interval[]中的参数中偶数的值表示开启绘画区域长度，奇数的值为关闭绘画区域的长度。interval[]的size只能是偶数。phase表示起始绘画的相位。
+            e[3] = new PathDashPathEffect(makePathDash(), 50, phase,
+                                          PathDashPathEffect.Style.ROTATE); // Dash可以是一个Path
+//            e[4] = new ComposePathEffect(e[2], e[1]);
+            e[4] = new ComposePathEffect(e[1], e[2]); // 轮流
+//            e[5] = new ComposePathEffect(e[3], e[1]);
+            e[5] = new ComposePathEffect(e[4], e[2]);
         }
 
         public SampleView(Context context) {
@@ -72,7 +75,7 @@ public class PathEffects extends Activity {
         }
 
         @Override protected void onDraw(Canvas canvas) {
-        	Log.d("ANDROID_LAB", "onDraw time=" + (System.currentTimeMillis() - lastTime));
+        	Log.d("ANDROID_LAB", "onDraw time=" + (System.currentTimeMillis() - lastTime) +" mPhase=" + mPhase);
         	lastTime = System.currentTimeMillis();
             canvas.drawColor(Color.WHITE);
 
@@ -111,6 +114,7 @@ public class PathEffects extends Activity {
         }
 
         private static Path makePathDash() {
+        	// 标定出一个箭头的轮廓来
             Path p = new Path();
             p.moveTo(4, 0);
             p.lineTo(0, -4);
